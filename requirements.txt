@@ -1,0 +1,4 @@
+django_heroku
+djangorestframework
+psycopg2-binary
+requests

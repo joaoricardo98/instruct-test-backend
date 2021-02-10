@@ -1,0 +1,36 @@
+version: "3"
+
+networks:
+  api-network:
+    driver: bridge
+
+services:
+  db:
+    image: postgres
+    networks:
+      - api-network
+    environment:
+      - POSTGRES_DB=postgres
+      - POSTGRES_USER=postgres
+      - POSTGRES_PASSWORD=postgres
+    ports:
+      - "5432:5432"
+
+  web:
+    networks:
+      - api-network
+    image: pjoaoricardo/instruct-vough-backend
+    build:
+      context: .
+      dockerfile: Dockerfile
+    environment:
+      - GITHUB_API_URL=https://api.github.com
+      - GITHUB_TOKEN=56e4230c707f74eb1fafd3eb25f3037d824ad0a7
+    volumes:
+      - .:/app
+    ports:
+      - "8000:8000"
+    working_dir: /app/vough_backend/
+    command: bash -c "python manage.py migrate && python manage.py runserver 0.0.0.0:8000"
+    depends_on:
+      - db
