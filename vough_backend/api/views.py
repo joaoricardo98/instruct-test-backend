@@ -5,6 +5,11 @@ from rest_framework.generics import GenericAPIView
 from rest_framework.mixins import ListModelMixin
 from rest_framework.response import Response
 from rest_framework.viewsets import GenericViewSet
+from drf_yasg.utils import swagger_auto_schema
+from drf_yasg.openapi import Parameter
+from drf_yasg.openapi import IN_QUERY
+from drf_yasg.openapi import IN_PATH
+from drf_yasg.openapi import TYPE_STRING
 
 from api.models import Organization
 from api.models import Repository
@@ -16,18 +21,38 @@ class OrganizationView(ListModelMixin, GenericViewSet):
     queryset = Organization.objects.all()
     serializer_class = OrganizationSerializer
 
+    @swagger_auto_schema(operation_summary="Listar todas as organizações.")
+    def list(self, request, *args, **kwargs):
+        return super().list(request, *args, **kwargs)
+
 
 class OrganizationCreateView(GenericAPIView):
-
     queryset = Organization.objects.all()
     serializer_class = OrganizationSerializer
 
+    initial_date_parameter = Parameter(
+        'initial_date', IN_QUERY, 'Querystring initial_date', format='YYYY-MM-DD', type=TYPE_STRING, required=False
+    )
+    end_date_parameter = Parameter(
+        'end_date', IN_QUERY, 'Querystring end_date', format='YYYY-MM-DD', type=TYPE_STRING, required=False
+    )
+    slug_parameter = Parameter(
+        'slug', IN_PATH, 'Nome da empresa a ser operada.', type=TYPE_STRING, required=True
+    )
+
+    @swagger_auto_schema(operation_summary="Deletar organização.", manual_parameters=[slug_parameter])
     def delete(self, request, slug: str):
         if organization := Organization.objects.filter(slug=slug).first():
             organization.delete()
             return Response(status=status.HTTP_204_NO_CONTENT)
         return Response(data={"error": "Org não cadastrada!"}, status=status.HTTP_404_NOT_FOUND)
 
+    @swagger_auto_schema(
+        operation_summary=(
+            "Buscar organização dentro da API do github e retorna suas informações e top 3 projetos."
+        ),
+        manual_parameters=[initial_date_parameter, end_date_parameter, slug_parameter]
+    )
     def get(self, request, slug: str):
         if not (organization := Organization.objects.filter(slug=slug).first()):
             github_api = GithubApi()

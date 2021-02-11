@@ -25,7 +25,8 @@ services:
       dockerfile: Dockerfile
     environment:
       - GITHUB_API_URL=https://api.github.com
-      - GITHUB_TOKEN=56e4230c707f74eb1fafd3eb25f3037d824ad0a7
+      - GITHUB_TOKEN=fcced509a8dd65185cba8cacfb21c64718df6308
+      - DEBUG=True
     volumes:
       - .:/app
     ports:

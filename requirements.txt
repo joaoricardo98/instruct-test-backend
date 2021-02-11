@@ -1,4 +1,6 @@
+django
 django_heroku
 djangorestframework
 psycopg2-binary
 requests
+drf-yasg
