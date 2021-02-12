@@ -89,3 +89,5 @@ time
 
 .history
 .http/*
+*htmlcov*
+*.pytest_cache*

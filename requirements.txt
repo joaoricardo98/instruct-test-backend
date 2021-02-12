@@ -4,3 +4,6 @@ djangorestframework
 psycopg2-binary
 requests
 drf-yasg
+pytest-django
+pytest-cov
+faker
